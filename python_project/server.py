@@ -12,7 +12,7 @@ my ports: 12570 through 12574
 '''
 port_offset = {'Riley':0, 'Jaquez':1, 'Juzang':2, 'Campbell':3, 'Bernard':4}
 base_port = 12570
-API_KEY = 'AIzaSyAxvKjrbI1EWx0pfpQAHDi3ze4ggLcf5aE'
+API_KEY = 'key_removed_for_privacy_purposes'
 connections = {
     'Riley' : ['Juzang', 'Jaquez'],
     'Jaquez' : ['Riley', 'Bernard'],
