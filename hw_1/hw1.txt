@@ -1,0 +1,35 @@
+For Q1-Q6, the only approaches that I considered were the ones I implemented.
+
+For Q1, I used pattern matching because it's recommended in the specs and because
+the discussion slides demonstrated the use of the "head :: cons" pattern. I used
+List.mem because it was listed in the discussion slides. Any weaknesses in time,
+space, and simplicity are minimal.
+
+For Q2, I used "subset" because it was recommend in discussion. A weakness may be
+time complexity, since my solution performs 2 O(N^2) "subset" calls (considering
+each list to have N elements).
+
+For Q3, I used "@" for because I learned it from discussion and it seemed very
+simple. Any weaknesses are minimal.
+
+For Q4, I learned the pattern matching strategy from discussion, and I used
+recursion because it simplifies the implementation. The solution has high
+space and time efficiency, so the weaknesses are minimal.
+
+Q5 is just a comment.
+
+For Q6, I used "if-else" because there were 2 main cases in my mind: x matches (f x)
+or it doesnt. For the latter case, I used recursion because the problem naturally
+seeks to apply f on the result of the prior call to f (i.e. it seems naturally
+recursive.) I allowed the function to infinitely run when it cannot find a fixed
+point because this required no alteration to my implementation.
+Space efficiency is high, and time efficiency seems optimal due to the nature of the
+problem, so weakness are likely minimal.
+
+For Q7, I used the strategy outlined in "python_hint.py" from the TA github. I initially
+considered taking a symbol s we've reached and adding all rules that have that s on their
+LHS to the final rule set (adding the nonterminals on the RHS to a set of reached symbols),
+but I rejected this because it seemed difficult to maintain the rule order, and because
+I realized that "computed_fixed_point" could be used in the solution. Weaknesses include
+lack of simplicity and readability, since the implementation is split into several
+different helper functions.

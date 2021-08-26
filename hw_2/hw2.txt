@@ -1,0 +1,99 @@
+I wrote "make_parser" in terms of "make_matcher". This is because "make_parser"
+is essentially equivalent to a matcher whose acceptor is always a function that
+only accepts the empty list. Having an acceptor that only accepts the empty list
+requires that the parser find a match for the entire fragment, which is the
+specified functionality in the spec.
+
+It was also logical to write the parser in terms of the matcher because the
+parser "should try grammar rules in the same order as make_matcher". Thus, by
+writing the parser in term of the matcher, the parser automatically satisfies
+this requirement.
+
+In order to write the parser in terms of the matcher, I modified the matcher so
+that instead of just returning "None" or the result of the acceptor, it returns
+a tuple. The first element of the returned tuple is the matcher output specified
+in the spec (i.e. "None" if there is no acceptable prefix or the return value of
+the acceptor otherwise). The second element of the tuple is a list of rules
+(i.e. an ('a 'b) symbol list list) that contains the rules that were used the
+acceptable match. This "derivation" (i.e. list of rules) contains the rules in
+the order of left-most derivation.
+
+The actual top-level "make_matcher" function calls the function described above
+(which is actually an "internal make_matcher helper") and recieves the tuple
+described above. It then extracts only the first element (i.e. the result of the
+acceptor, or None otherwise) and returns it.
+
+The "make_parser" function calls the same "internal make_matcher helper"
+function by passing it an acceptor that accepts only the empty list. It recieves
+the tuples described above, and from that tuple, the parser extracts both
+elements. If the acceptor result is None, then the parser returns
+None. Otherwise, the parser takes the "derivation" (i.e. list of rules used to
+derive our match) and passes it to a helper function that creates a parser tree,
+knowing that the rules are in the order of left-most derivation. The helper
+function returns that parse tree, and the parser then takes that parse tree and
+returns it as its own output as well.
+
+WEAKNESSES...
+
+A major weakness of my implementation is its inability to terminate successfully
+for all possible grammars. By this, I mean that there exist some grammars that
+cause the matcher (and parser, since the parser is implemented by calling the
+matcher) to enter an infinite loop. This phenomenon occurs when a grammar
+contains left-recursion, which is when the leftmost symbol in a rule can be
+expanded into the rule's nonterminal through a sequence of leftmost nonterminal
+expansions. This can be visualized as a loop, where the rule's nonterminal
+generates a rule that, in turn, generates a chain of rules (by left-most
+derivation). The loop is completed when a rule in that chain has a left-most
+nonterminal symbol that is the same as our initial nonterminal. One such example
+grammar is the following...
+
+	let mygrammar =
+	    (Expr,
+		function
+		 | Expr ->
+		   	[[N Expr; T "5"];
+			 [T "4"]]
+	    )
+
+When my matcher is run on the grammar above, the matcher attempts to recursively
+generate a derivation (i.e. follow the rules until it reaches un-expandable
+nonterminals) by always expanding the left-most nonterminal. It backtracks when
+a nonterminal fails to match a fragment, terminates when a prefix has been found
+and the acceptor accepts the suffix, and continues trying to match if none of
+these conditions are satisfied. Since the matcher tries the rules in top-down
+order, and because the top-most rule under "Expr" has the left-most nonterminal
+symbol "Expr", the matcher continually expands "Expr" in an infinite loop. It
+start with the start symbol "Expr", then uses this to get the rule "[N Expr; T
+"5"]", then expands "N Expr" because it is the leftmost symbol in the rule, then
+uses this to get the rule "[N Expr; T "5"]", then expands the symbol "N Expr",
+... etc.
+
+Another major weakness is that the matcher (and therefore parser) is extremely
+inefficient for fragments whose derivations require the last rule in a rule list
+(particularaly the last rule in the rule list for the start symbol). An example
+grammar is the following ...
+
+	let mygrammar =
+	    (Expr,
+             function ->
+	     	      | Expr ->
+		      	     [[N Term; T "+"; N Expr];
+			      [N Term; T "-"; N Expr];
+			      ...
+			      [N SpecialChar]]
+		      | Term ->
+		      	     (* long list of rules  with many nonterminals *)
+			...
+		      | SpecialChar ->
+		      	     [[T "&"]]
+	     )
+
+When the fragment is "["&"]", the matcher always expands rules top-down, and it
+always expands the left-most non-terminal symbol. Thus, it will start with start
+symbol "Expr" and process all of the initial rules for "Expr" (which may
+represent very deep trees because "N Term" has a long list of nonterminal-heavy
+rules) until it finally reaches the correct rule "[N SpecialChar]". Thus,
+make_matcher is extremely inefficient, even for a simple fragment, because it
+must try out all of the rules and follow each of their deep parse trees instead
+of using the structure/information of the fragment to determine which rule
+should be expanded first to optimize efficiency.
