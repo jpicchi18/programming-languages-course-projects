@@ -8,3 +8,11 @@ Course description:
 
 Programming languages learned in this course:
 > OCaml, Java, Prolog, Scheme, Python, V, Latex
+
+Projects:
+- set manipulation and context-free grammar processing (OCaml): [homework 1](https://github.com/jpicchi18/programming-languages-course-projects/tree/main/hw_1)
+- context-free grammar parser and parse-tree generator (OCaml): [homework 2](https://github.com/jpicchi18/programming-languages-course-projects/tree/main/hw_2)
+- multithreaded gzip compression filter (Java): [homework 3](https://github.com/jpicchi18/programming-languages-course-projects/tree/main/hw_3)
+- kenken puzzle solver (prolog): [homework 4](https://github.com/jpicchi18/programming-languages-course-projects/tree/main/hw_4)
+- research and analysis of the *V* programming language: [homework 6](https://github.com/jpicchi18/programming-languages-course-projects/tree/main/hw_6)
+- proxy server herd to service mobile smartphone requests (python with asyncio): [python project](https://github.com/jpicchi18/programming-languages-course-projects/tree/main/python_project).
