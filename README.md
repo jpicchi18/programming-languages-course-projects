@@ -7,4 +7,4 @@ Course description:
 > \- UCLA Registrar's Office (https://registrar.ucla.edu/academics/course-descriptions?search=Computer+Science)
 
 Programming languages learned in this course:
-> OCaml, Java, Prolog, Scheme, Python, V
+> OCaml, Java, Prolog, Scheme, Python, V, Latex
